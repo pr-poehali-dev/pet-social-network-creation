@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [liked, setLiked] = useState<Record<number, boolean>>({});
 
   const toggleLike = (id: number) => {
@@ -94,7 +96,7 @@ const Index = () => {
                 <Icon name="Plus" size={16} />
                 Создать пост
               </Button>
-              <Avatar className="cursor-pointer ring-2 ring-primary/20 hover:ring-primary transition-all">
+              <Avatar className="cursor-pointer ring-2 ring-primary/20 hover:ring-primary transition-all" onClick={() => navigate('/profile')}>
                 <AvatarImage src="https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg" />
                 <AvatarFallback>МП</AvatarFallback>
               </Avatar>
@@ -205,7 +207,7 @@ const Index = () => {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Avatar className="ring-2 ring-primary/20">
+                        <Avatar className="ring-2 ring-primary/20 cursor-pointer" onClick={() => navigate('/profile')}>
                           <AvatarImage src={post.authorAvatar} />
                           <AvatarFallback>{post.author[0]}</AvatarFallback>
                         </Avatar>

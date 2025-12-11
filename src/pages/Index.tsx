@@ -1,12 +1,353 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Icon from '@/components/ui/icon';
 
 const Index = () => {
+  const [liked, setLiked] = useState<Record<number, boolean>>({});
+
+  const toggleLike = (id: number) => {
+    setLiked(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const posts = [
+    {
+      id: 1,
+      author: 'Барсик',
+      authorAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
+      petType: '🐱 Кот',
+      time: '2 часа назад',
+      content: 'Сегодня поймал солнечного зайчика! Лучший день в моей жизни 😸',
+      image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
+      likes: 47,
+      comments: 12
+    },
+    {
+      id: 2,
+      author: 'Рекс',
+      authorAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      petType: '🐶 Пёс',
+      time: '5 часов назад',
+      content: 'Прогулка в парке была невероятной! Познакомился с тремя новыми друзьями 🦴',
+      image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      likes: 89,
+      comments: 23
+    },
+    {
+      id: 3,
+      author: 'Макс',
+      authorAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
+      petType: '🐶 Щенок',
+      time: '1 день назад',
+      content: 'Мой первый день дома! Так много всего интересного 🎾',
+      image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
+      likes: 156,
+      comments: 45
+    }
+  ];
+
+  const events = [
+    { id: 1, title: 'Выставка собак "Лучший друг"', date: '15 декабря', location: 'Москва', emoji: '🏆' },
+    { id: 2, title: 'Встреча владельцев хаски', date: '18 декабря', location: 'Парк Горького', emoji: '🐺' },
+    { id: 3, title: 'Кошачье кафе - день открытых дверей', date: '20 декабря', location: 'СПб', emoji: '☕' }
+  ];
+
+  const communities = [
+    { id: 1, name: 'Любители котов', members: 12543, emoji: '🐱' },
+    { id: 2, name: 'Владельцы лабрадоров', members: 8921, emoji: '🦮' },
+    { id: 3, name: 'Экзотические питомцы', members: 3456, emoji: '🦎' },
+    { id: 4, name: 'Дрессировка собак', members: 15678, emoji: '🎓' }
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary">
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border shadow-sm">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 group">
+              <div className="text-3xl animate-bounce-slow">🐾</div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                ПетСеть
+              </h1>
+            </div>
+            
+            <nav className="hidden md:flex items-center gap-6">
+              <Button variant="ghost" className="gap-2 hover:scale-105 transition-transform">
+                <Icon name="Home" size={20} />
+                <span>Главная</span>
+              </Button>
+              <Button variant="ghost" className="gap-2 hover:scale-105 transition-transform">
+                <Icon name="MessageCircle" size={20} />
+                <span>Сообщения</span>
+              </Button>
+              <Button variant="ghost" className="gap-2 hover:scale-105 transition-transform">
+                <Icon name="Bell" size={20} />
+                <span>Уведомления</span>
+              </Button>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <Button size="sm" className="gap-2 hover:scale-105 transition-transform">
+                <Icon name="Plus" size={16} />
+                Создать пост
+              </Button>
+              <Avatar className="cursor-pointer ring-2 ring-primary/20 hover:ring-primary transition-all">
+                <AvatarImage src="https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg" />
+                <AvatarFallback>МП</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <aside className="lg:col-span-3 space-y-4">
+            <Card className="border-2 hover:shadow-lg transition-shadow animate-fade-in">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <span className="text-2xl">📅</span>
+                  События
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {events.map(event => (
+                  <div 
+                    key={event.id} 
+                    className="p-3 rounded-lg bg-muted hover:bg-accent transition-all cursor-pointer hover:scale-105"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-2xl">{event.emoji}</span>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{event.title}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{event.date} • {event.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 hover:shadow-lg transition-shadow animate-fade-in">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <span className="text-2xl">👥</span>
+                  Сообщества
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {communities.map(community => (
+                  <div 
+                    key={community.id} 
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-all cursor-pointer hover:scale-105"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{community.emoji}</span>
+                      <div>
+                        <p className="text-sm font-medium">{community.name}</p>
+                        <p className="text-xs text-muted-foreground">{community.members.toLocaleString()} участников</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </aside>
+
+          <section className="lg:col-span-6 space-y-4">
+            <Card className="border-2 bg-gradient-to-br from-primary/5 to-secondary/5 animate-fade-in">
+              <CardHeader>
+                <CardTitle className="font-handwritten text-2xl text-center">
+                  Чем хочешь поделиться сегодня? 🐾
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-3">
+                  <Avatar>
+                    <AvatarImage src="https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg" />
+                    <AvatarFallback>МП</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <input 
+                      type="text" 
+                      placeholder="Расскажи о своём питомце..."
+                      className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:border-primary focus:outline-none transition-all"
+                    />
+                    <div className="flex gap-2 mt-3">
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Icon name="Image" size={16} />
+                        Фото
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Icon name="Video" size={16} />
+                        Видео
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Icon name="Smile" size={16} />
+                        Настроение
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              {posts.map((post, index) => (
+                <Card 
+                  key={post.id} 
+                  className="border-2 hover:shadow-xl transition-all animate-fade-in overflow-hidden"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="ring-2 ring-primary/20">
+                          <AvatarImage src={post.authorAvatar} />
+                          <AvatarFallback>{post.author[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-base">{post.author}</CardTitle>
+                          <CardDescription className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-xs">{post.petType}</Badge>
+                            <span className="text-xs">{post.time}</span>
+                          </CardDescription>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm">
+                        <Icon name="MoreVertical" size={20} />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-base leading-relaxed">{post.content}</p>
+                    <div className="rounded-xl overflow-hidden border-2 border-border">
+                      <img 
+                        src={post.image} 
+                        alt={post.author}
+                        className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="flex items-center gap-4 pt-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="gap-2 hover:scale-110 transition-transform"
+                        onClick={() => toggleLike(post.id)}
+                      >
+                        <Icon 
+                          name={liked[post.id] ? "Heart" : "Heart"} 
+                          size={20} 
+                          className={liked[post.id] ? "fill-primary text-primary" : ""}
+                        />
+                        <span className={liked[post.id] ? "text-primary font-semibold" : ""}>
+                          {post.likes + (liked[post.id] ? 1 : 0)}
+                        </span>
+                      </Button>
+                      <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
+                        <Icon name="MessageCircle" size={20} />
+                        <span>{post.comments}</span>
+                      </Button>
+                      <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
+                        <Icon name="Share2" size={20} />
+                        <span>Поделиться</span>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+
+          <aside className="lg:col-span-3 space-y-4">
+            <Card className="border-2 hover:shadow-lg transition-shadow animate-fade-in bg-gradient-to-br from-secondary/20 to-accent/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <span className="text-2xl">💡</span>
+                  Советы дня
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="p-3 rounded-lg bg-background border-2 border-border">
+                  <p className="text-sm font-medium mb-2">🦷 Здоровье зубов</p>
+                  <p className="text-xs text-muted-foreground">
+                    Регулярная чистка зубов поможет избежать проблем с полостью рта у питомца
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-background border-2 border-border">
+                  <p className="text-sm font-medium mb-2">🏃 Активность</p>
+                  <p className="text-xs text-muted-foreground">
+                    Собакам нужно минимум 30 минут активных прогулок каждый день
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-background border-2 border-border">
+                  <p className="text-sm font-medium mb-2">🍖 Питание</p>
+                  <p className="text-xs text-muted-foreground">
+                    Следите за размером порций - ожирение опасно для здоровья питомцев
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 hover:shadow-lg transition-shadow animate-fade-in">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <span className="text-2xl">🛍️</span>
+                  Магазин
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="p-3 rounded-lg bg-muted hover:bg-accent transition-all cursor-pointer hover:scale-105">
+                  <div className="flex gap-3">
+                    <div className="w-16 h-16 rounded-lg bg-primary/20 flex items-center justify-center text-2xl">
+                      🦴
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Игрушка для собак</p>
+                      <p className="text-xs text-muted-foreground mt-1">от 299 ₽</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-muted hover:bg-accent transition-all cursor-pointer hover:scale-105">
+                  <div className="flex gap-3">
+                    <div className="w-16 h-16 rounded-lg bg-secondary/40 flex items-center justify-center text-2xl">
+                      🏠
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Домик для кошки</p>
+                      <p className="text-xs text-muted-foreground mt-1">от 1990 ₽</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
+        </div>
+      </main>
+
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border py-2 z-50">
+        <div className="flex items-center justify-around px-4">
+          <Button variant="ghost" size="sm" className="flex-col gap-1 h-auto py-2">
+            <Icon name="Home" size={20} />
+            <span className="text-xs">Главная</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="flex-col gap-1 h-auto py-2">
+            <Icon name="Search" size={20} />
+            <span className="text-xs">Поиск</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="flex-col gap-1 h-auto py-2">
+            <Icon name="MessageCircle" size={20} />
+            <span className="text-xs">Чаты</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="flex-col gap-1 h-auto py-2">
+            <Icon name="User" size={20} />
+            <span className="text-xs">Профиль</span>
+          </Button>
+        </div>
+      </nav>
     </div>
   );
 };

@@ -10,17 +10,27 @@ import Icon from '@/components/ui/icon';
 const Index = () => {
   const navigate = useNavigate();
   const [liked, setLiked] = useState<Record<number, boolean>>({});
+  const [following, setFollowing] = useState<Record<number, boolean>>({});
+  const [selectedPet, setSelectedPet] = useState<number | null>(null);
+  const [showPetSelector, setShowPetSelector] = useState(false);
 
   const toggleLike = (id: number) => {
     setLiked(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const toggleFollow = (ownerId: number) => {
+    setFollowing(prev => ({ ...prev, [ownerId]: !prev[ownerId] }));
+  };
+
   const posts = [
     {
       id: 1,
-      author: 'Барсик',
-      authorAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
+      petName: 'Барсик',
+      petAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
       petType: '🐱 Кот',
+      ownerName: 'Анна Петрова',
+      ownerAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      ownerId: 1,
       time: '2 часа назад',
       content: 'Сегодня поймал солнечного зайчика! Лучший день в моей жизни 😸',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
@@ -29,9 +39,12 @@ const Index = () => {
     },
     {
       id: 2,
-      author: 'Рекс',
-      authorAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      petName: 'Рекс',
+      petAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
       petType: '🐶 Пёс',
+      ownerName: 'Анна Петрова',
+      ownerAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      ownerId: 1,
       time: '5 часов назад',
       content: 'Прогулка в парке была невероятной! Познакомился с тремя новыми друзьями 🦴',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
@@ -40,9 +53,12 @@ const Index = () => {
     },
     {
       id: 3,
-      author: 'Макс',
-      authorAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
+      petName: 'Макс',
+      petAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
       petType: '🐶 Щенок',
+      ownerName: 'Анна Петрова',
+      ownerAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      ownerId: 1,
       time: '1 день назад',
       content: 'Мой первый день дома! Так много всего интересного 🎾',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
@@ -62,6 +78,27 @@ const Index = () => {
     { id: 2, name: 'Владельцы лабрадоров', members: 8921, emoji: '🦮' },
     { id: 3, name: 'Экзотические питомцы', members: 3456, emoji: '🦎' },
     { id: 4, name: 'Дрессировка собак', members: 15678, emoji: '🎓' }
+  ];
+
+  const myPets = [
+    {
+      id: 1,
+      name: 'Рекс',
+      type: '🐕 Золотистый ретривер',
+      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+    },
+    {
+      id: 2,
+      name: 'Барсик',
+      type: '🐱 Шотландская вислоухая',
+      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
+    },
+    {
+      id: 3,
+      name: 'Макс',
+      type: '🐶 Лабрадор',
+      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
+    }
   ];
 
   return (
@@ -176,32 +213,66 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-3">
-                  <Avatar>
-                    <AvatarImage src="https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg" />
-                    <AvatarFallback>МП</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <input 
-                      type="text" 
-                      placeholder="Расскажи о своём питомце..."
-                      className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:border-primary focus:outline-none transition-all"
-                    />
-                    <div className="flex gap-2 mt-3">
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Icon name="Image" size={16} />
-                        Фото
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Icon name="Video" size={16} />
-                        Видео
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Icon name="Smile" size={16} />
-                        Настроение
-                      </Button>
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <Avatar className="cursor-pointer" onClick={() => setShowPetSelector(!showPetSelector)}>
+                      <AvatarImage src={selectedPet ? myPets.find(p => p.id === selectedPet)?.avatar : myPets[0].avatar} />
+                      <AvatarFallback>{selectedPet ? myPets.find(p => p.id === selectedPet)?.name[0] : myPets[0].name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <input 
+                        type="text" 
+                        placeholder={`Расскажи от имени ${selectedPet ? myPets.find(p => p.id === selectedPet)?.name : myPets[0].name}...`}
+                        className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:border-primary focus:outline-none transition-all"
+                      />
+                      <div className="flex gap-2 mt-3">
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <Icon name="Image" size={16} />
+                          Фото
+                        </Button>
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <Icon name="Video" size={16} />
+                          Видео
+                        </Button>
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <Icon name="Smile" size={16} />
+                          Настроение
+                        </Button>
+                      </div>
                     </div>
                   </div>
+
+                  {showPetSelector && (
+                    <div className="p-3 rounded-lg border-2 border-primary/20 bg-primary/5 animate-fade-in space-y-2">
+                      <p className="text-sm font-medium mb-2">Выбери питомца для публикации:</p>
+                      <div className="grid grid-cols-1 gap-2">
+                        {myPets.map(pet => (
+                          <div
+                            key={pet.id}
+                            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
+                              selectedPet === pet.id 
+                                ? 'bg-primary text-primary-foreground ring-2 ring-primary' 
+                                : 'bg-background hover:bg-muted'
+                            }`}
+                            onClick={() => {
+                              setSelectedPet(pet.id);
+                              setShowPetSelector(false);
+                            }}
+                          >
+                            <Avatar className="ring-2 ring-background">
+                              <AvatarImage src={pet.avatar} />
+                              <AvatarFallback>{pet.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{pet.name}</p>
+                              <p className="text-xs opacity-80">{pet.type}</p>
+                            </div>
+                            {selectedPet === pet.id && <Icon name="Check" size={20} />}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -214,23 +285,51 @@ const Index = () => {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="ring-2 ring-primary/20 cursor-pointer" onClick={() => navigate('/profile')}>
-                          <AvatarImage src={post.authorAvatar} />
-                          <AvatarFallback>{post.author[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-base">{post.author}</CardTitle>
-                          <CardDescription className="flex items-center gap-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <div className="flex flex-col gap-2">
+                          <Avatar 
+                            className="ring-2 ring-primary/20 cursor-pointer hover:scale-110 transition-transform w-12 h-12"
+                            onClick={() => navigate(`/pet/${post.id}`)}
+                          >
+                            <AvatarImage src={post.petAvatar} />
+                            <AvatarFallback>{post.petName[0]}</AvatarFallback>
+                          </Avatar>
+                          <Avatar 
+                            className="w-8 h-8 ring-1 ring-border cursor-pointer hover:scale-110 transition-transform"
+                            onClick={() => navigate('/profile')}
+                            title={`Хозяин: ${post.ownerName}`}
+                          >
+                            <AvatarImage src={post.ownerAvatar} />
+                            <AvatarFallback className="text-xs">{post.ownerName[0]}</AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="flex-1">
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <span className="cursor-pointer hover:underline" onClick={() => navigate(`/pet/${post.id}`)}>{post.petName}</span>
                             <Badge variant="secondary" className="text-xs">{post.petType}</Badge>
-                            <span className="text-xs">{post.time}</span>
+                          </CardTitle>
+                          <CardDescription className="text-xs mt-1">
+                            <span className="cursor-pointer hover:underline" onClick={() => navigate('/profile')}>хозяин: {post.ownerName}</span>
+                            <span className="mx-1">•</span>
+                            <span>{post.time}</span>
                           </CardDescription>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
-                        <Icon name="MoreVertical" size={20} />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          size="sm" 
+                          variant={following[post.ownerId] ? "outline" : "default"}
+                          className="gap-1 hover:scale-105 transition-transform"
+                          onClick={() => toggleFollow(post.ownerId)}
+                        >
+                          <Icon name={following[post.ownerId] ? "UserCheck" : "UserPlus"} size={14} />
+                          <span className="hidden sm:inline">{following[post.ownerId] ? "Отписаться" : "Подписаться"}</span>
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Icon name="MoreVertical" size={20} />
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -238,7 +337,7 @@ const Index = () => {
                     <div className="rounded-xl overflow-hidden border-2 border-border">
                       <img 
                         src={post.image} 
-                        alt={post.author}
+                        alt={post.petName}
                         className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
                       />
                     </div>

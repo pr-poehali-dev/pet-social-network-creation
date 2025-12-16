@@ -96,10 +96,25 @@ const Profile = () => {
           
           <CardContent className="relative px-6 pb-6">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-end -mt-16">
-              <Avatar className="w-32 h-32 border-4 border-background shadow-xl ring-4 ring-primary/20">
-                <AvatarImage src={ownerProfile.avatar} />
-                <AvatarFallback className="text-3xl">{ownerProfile.name[0]}</AvatarFallback>
-              </Avatar>
+              <div className="flex flex-col items-center gap-3">
+                <Avatar className="w-32 h-32 border-4 border-background shadow-xl ring-4 ring-primary/20">
+                  <AvatarImage src={ownerProfile.avatar} />
+                  <AvatarFallback className="text-3xl">{ownerProfile.name[0]}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex gap-2">
+                  {pets.map(pet => (
+                    <Avatar 
+                      key={pet.id} 
+                      className="w-12 h-12 border-2 border-background shadow-lg ring-2 ring-primary/10 hover:scale-110 transition-transform cursor-pointer"
+                      title={pet.name}
+                    >
+                      <AvatarImage src={pet.avatar} />
+                      <AvatarFallback className="text-lg">{pet.emoji}</AvatarFallback>
+                    </Avatar>
+                  ))}
+                </div>
+              </div>
 
               <div className="flex-1 space-y-3">
                 <div>

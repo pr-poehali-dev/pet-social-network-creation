@@ -1,13 +1,33 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
+
+interface Comment {
+  id: number;
+  user: string;
+  avatar: string;
+  text: string;
+  time: string;
+}
+
+interface PhotoData {
+  url: string;
+  likes: number;
+  isLiked: boolean;
+  comments: Comment[];
+}
 
 const PetProfile = () => {
   const navigate = useNavigate();
   const { petId } = useParams();
+  const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
+  const [newComment, setNewComment] = useState('');
 
   const pets = [
     {
@@ -92,6 +112,18 @@ const PetProfile = () => {
 
   const pet = pets.find(p => p.id === petId);
 
+  const [photosData, setPhotosData] = useState<PhotoData[]>(
+    pet?.photos.map((url, idx) => ({
+      url,
+      likes: Math.floor(Math.random() * 50) + 10,
+      isLiked: false,
+      comments: idx === 0 ? [
+        { id: 1, user: 'Мария К.', avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg', text: 'Какой милашка! 😍', time: '2 часа назад' },
+        { id: 2, user: 'Иван С.', avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg', text: 'Обожаю таких собак!', time: '5 часов назад' }
+      ] : []
+    })) || []
+  );
+
   if (!pet) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -102,6 +134,34 @@ const PetProfile = () => {
       </div>
     );
   }
+
+  const handleLike = (photoIdx: number) => {
+    setPhotosData(prev => prev.map((photo, idx) => 
+      idx === photoIdx 
+        ? { ...photo, isLiked: !photo.isLiked, likes: photo.isLiked ? photo.likes - 1 : photo.likes + 1 }
+        : photo
+    ));
+  };
+
+  const handleAddComment = (photoIdx: number) => {
+    if (!newComment.trim()) return;
+    
+    const newCommentObj: Comment = {
+      id: Date.now(),
+      user: 'Вы',
+      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
+      text: newComment,
+      time: 'Только что'
+    };
+
+    setPhotosData(prev => prev.map((photo, idx) => 
+      idx === photoIdx 
+        ? { ...photo, comments: [...photo.comments, newCommentObj] }
+        : photo
+    ));
+    
+    setNewComment('');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary pb-20">
@@ -219,21 +279,118 @@ const PetProfile = () => {
             Фотоальбом
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {pet.photos.map((photo, idx) => (
+            {photosData.map((photo, idx) => (
               <div 
                 key={idx} 
-                className="aspect-square rounded-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer shadow-md"
+                className="relative group cursor-pointer"
+                onClick={() => setSelectedPhoto(idx)}
               >
-                <img 
-                  src={photo} 
-                  alt={`${pet.name} фото ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                <div className="aspect-square rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform">
+                  <img 
+                    src={photo.url} 
+                    alt={`${pet.name} фото ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between bg-black/60 backdrop-blur-sm rounded-full px-3 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 text-white text-sm">
+                    <Icon name="Heart" size={16} className={photo.isLiked ? 'fill-red-500 text-red-500' : ''} />
+                    <span>{photo.likes}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-white text-sm">
+                    <Icon name="MessageCircle" size={16} />
+                    <span>{photo.comments.length}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </Card>
       </main>
+
+      <Dialog open={selectedPhoto !== null} onOpenChange={() => setSelectedPhoto(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedPhoto !== null && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <span>{pet.name}</span>
+                  <span>{pet.emoji}</span>
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div className="rounded-lg overflow-hidden">
+                  <img 
+                    src={photosData[selectedPhoto].url} 
+                    alt={`${pet.name} фото`}
+                    className="w-full object-contain max-h-[50vh]"
+                  />
+                </div>
+
+                <div className="flex items-center gap-4 pb-4 border-b">
+                  <Button
+                    variant={photosData[selectedPhoto].isLiked ? "default" : "outline"}
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => handleLike(selectedPhoto)}
+                  >
+                    <Icon 
+                      name="Heart" 
+                      size={18} 
+                      className={photosData[selectedPhoto].isLiked ? 'fill-current' : ''} 
+                    />
+                    <span>{photosData[selectedPhoto].likes}</span>
+                  </Button>
+                  
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Icon name="MessageCircle" size={18} />
+                    <span>{photosData[selectedPhoto].comments.length} комментариев</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Комментарии</h4>
+                  
+                  {photosData[selectedPhoto].comments.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">Пока нет комментариев</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {photosData[selectedPhoto].comments.map(comment => (
+                        <div key={comment.id} className="flex gap-3">
+                          <Avatar className="w-10 h-10">
+                            <AvatarImage src={comment.avatar} />
+                            <AvatarFallback>{comment.user[0]}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="bg-muted rounded-lg p-3">
+                              <p className="font-semibold text-sm">{comment.user}</p>
+                              <p className="text-sm">{comment.text}</p>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">{comment.time}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-2">
+                    <Input
+                      placeholder="Добавить комментарий..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddComment(selectedPhoto)}
+                    />
+                    <Button onClick={() => handleAddComment(selectedPhoto)}>
+                      <Icon name="Send" size={18} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -31,6 +31,7 @@ const Index = () => {
       ownerName: 'Анна Петрова',
       ownerAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
       ownerId: 1,
+      ownerFollowers: 2345,
       time: '2 часа назад',
       content: 'Сегодня поймал солнечного зайчика! Лучший день в моей жизни 😸',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
@@ -45,6 +46,7 @@ const Index = () => {
       ownerName: 'Анна Петрова',
       ownerAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
       ownerId: 1,
+      ownerFollowers: 2345,
       time: '5 часов назад',
       content: 'Прогулка в парке была невероятной! Познакомился с тремя новыми друзьями 🦴',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
@@ -59,6 +61,7 @@ const Index = () => {
       ownerName: 'Анна Петрова',
       ownerAvatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
       ownerId: 1,
+      ownerFollowers: 2345,
       time: '1 день назад',
       content: 'Мой первый день дома! Так много всего интересного 🎾',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
@@ -309,10 +312,16 @@ const Index = () => {
                             <span className="cursor-pointer hover:underline" onClick={() => navigate(`/pet/${post.id}`)}>{post.petName}</span>
                             <Badge variant="secondary" className="text-xs">{post.petType}</Badge>
                           </CardTitle>
-                          <CardDescription className="text-xs mt-1">
-                            <span className="cursor-pointer hover:underline" onClick={() => navigate('/profile')}>хозяин: {post.ownerName}</span>
-                            <span className="mx-1">•</span>
-                            <span>{post.time}</span>
+                          <CardDescription className="text-xs mt-1 space-y-0.5">
+                            <div className="flex items-center gap-1">
+                              <span className="cursor-pointer hover:underline" onClick={() => navigate('/profile')}>хозяин: {post.ownerName}</span>
+                              <span>•</span>
+                              <span className="flex items-center gap-0.5">
+                                <Icon name="Users" size={12} className="inline" />
+                                {post.ownerFollowers.toLocaleString()}
+                              </span>
+                            </div>
+                            <div>{post.time}</div>
                           </CardDescription>
                         </div>
                       </div>

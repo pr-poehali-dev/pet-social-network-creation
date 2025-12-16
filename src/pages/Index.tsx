@@ -316,9 +316,11 @@ const Index = () => {
                             <div className="flex items-center gap-1">
                               <span className="cursor-pointer hover:underline" onClick={() => navigate('/profile')}>хозяин: {post.ownerName}</span>
                               <span>•</span>
-                              <span className="flex items-center gap-0.5">
+                              <span className="flex items-center gap-0.5 transition-all">
                                 <Icon name="Users" size={12} className="inline" />
-                                {(post.ownerFollowers + (following[post.ownerId] ? 1 : 0)).toLocaleString()}
+                                <span className={`inline-block transition-all duration-300 ${following[post.ownerId] ? 'scale-110 font-bold text-primary' : ''}`}>
+                                  {(post.ownerFollowers + (following[post.ownerId] ? 1 : 0)).toLocaleString()}
+                                </span>
                               </span>
                             </div>
                             <div>{post.time}</div>

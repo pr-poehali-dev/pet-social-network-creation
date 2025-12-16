@@ -33,10 +33,17 @@ const Index = () => {
       ownerId: 1,
       ownerFollowers: 2345,
       time: '2 часа назад',
+      timestamp: Date.now() - 2 * 60 * 60 * 1000,
       content: 'Сегодня поймал солнечного зайчика! Лучший день в моей жизни 😸',
+      fullContent: 'Сегодня поймал солнечного зайчика! Лучший день в моей жизни 😸\n\nС самого утра я заметил, как солнечный луч пробивается через окно и танцует на стене. Я сразу понял - это моя добыча!',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
       likes: 47,
-      comments: 12
+      comments: 5,
+      previewComments: [
+        { id: 1, author: 'Мурка', text: 'О да! Солнечные зайчики - лучшая игра! 🌟', likes: 23 },
+        { id: 2, author: 'Рыжик', text: 'Классная история! А я вчера поймал муху 🪰', likes: 12 },
+        { id: 3, author: 'Снежок', text: 'Красавчик! Продолжай в том же духе! 💪', likes: 8 }
+      ]
     },
     {
       id: 2,
@@ -48,10 +55,13 @@ const Index = () => {
       ownerId: 1,
       ownerFollowers: 2345,
       time: '5 часов назад',
+      timestamp: Date.now() - 5 * 60 * 60 * 1000,
       content: 'Прогулка в парке была невероятной! Познакомился с тремя новыми друзьями 🦴',
+      fullContent: 'Прогулка в парке была невероятной! Познакомился с тремя новыми друзьями 🦴',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
       likes: 89,
-      comments: 23
+      comments: 0,
+      previewComments: []
     },
     {
       id: 3,
@@ -63,10 +73,13 @@ const Index = () => {
       ownerId: 1,
       ownerFollowers: 2345,
       time: '1 день назад',
+      timestamp: Date.now() - 24 * 60 * 60 * 1000,
       content: 'Мой первый день дома! Так много всего интересного 🎾',
+      fullContent: 'Мой первый день дома! Так много всего интересного 🎾',
       image: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/aa0a1ae6-5792-462e-b696-bcd9fb038499.jpg',
       likes: 156,
-      comments: 45
+      comments: 0,
+      previewComments: []
     }
   ];
 
@@ -345,8 +358,16 @@ const Index = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <p className="text-base leading-relaxed">{post.content}</p>
-                    <div className="rounded-xl overflow-hidden border-2 border-border">
+                    <p 
+                      className="text-base leading-relaxed cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => navigate(`/post/${post.id}`)}
+                    >
+                      {post.content}
+                    </p>
+                    <div 
+                      className="rounded-xl overflow-hidden border-2 border-border cursor-pointer"
+                      onClick={() => navigate(`/post/${post.id}`)}
+                    >
                       <img 
                         src={post.image} 
                         alt={post.petName}
@@ -369,7 +390,12 @@ const Index = () => {
                           {post.likes + (liked[post.id] ? 1 : 0)}
                         </span>
                       </Button>
-                      <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="gap-2 hover:scale-110 transition-transform"
+                        onClick={() => navigate(`/post/${post.id}`)}
+                      >
                         <Icon name="MessageCircle" size={20} />
                         <span>{post.comments}</span>
                       </Button>
@@ -378,6 +404,41 @@ const Index = () => {
                         <span>Поделиться</span>
                       </Button>
                     </div>
+
+                    {post.previewComments.length > 0 && (
+                      <div className="space-y-2 pt-2 border-t">
+                        <div className="text-xs text-muted-foreground font-medium">Комментарии:</div>
+                        {post.previewComments.map((comment, idx) => (
+                          <div 
+                            key={comment.id} 
+                            className="flex items-start gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                            onClick={() => navigate(`/post/${post.id}`)}
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold">{comment.author}</span>
+                                {idx === 0 && <Badge variant="secondary" className="text-xs px-1 py-0">🔥 Популярный</Badge>}
+                                {idx === 1 && post.previewComments.length === 3 && <Badge variant="outline" className="text-xs px-1 py-0">⏰ Старый</Badge>}
+                                {idx === 2 && <Badge variant="outline" className="text-xs px-1 py-0">⭐ Новый</Badge>}
+                              </div>
+                              <p className="text-xs mt-0.5">{comment.text}</p>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Icon name="Heart" size={12} />
+                              {comment.likes}
+                            </div>
+                          </div>
+                        ))}
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="w-full text-xs"
+                          onClick={() => navigate(`/post/${post.id}`)}
+                        >
+                          Посмотреть все комментарии ({post.comments})
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

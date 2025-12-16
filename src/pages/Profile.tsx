@@ -108,6 +108,7 @@ const Profile = () => {
                       key={pet.id} 
                       className="w-12 h-12 border-2 border-background shadow-lg ring-2 ring-primary/10 hover:scale-110 transition-transform cursor-pointer"
                       title={pet.name}
+                      onClick={() => navigate(`/pet/${pet.id}`)}
                     >
                       <AvatarImage src={pet.avatar} />
                       <AvatarFallback className="text-lg">{pet.emoji}</AvatarFallback>
@@ -181,7 +182,11 @@ const Profile = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pets.map(pet => (
-              <Card key={pet.id} className="overflow-hidden hover:shadow-xl transition-all hover:scale-105 cursor-pointer">
+              <Card 
+                key={pet.id} 
+                className="overflow-hidden hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
+                onClick={() => navigate(`/pet/${pet.id}`)}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-16 h-16 ring-2 ring-primary/20">

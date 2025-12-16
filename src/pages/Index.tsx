@@ -227,18 +227,25 @@ const Index = () => {
                 <CardTitle className="font-handwritten text-2xl text-center">
                   Чем хочешь поделиться сегодня? 🐾
                 </CardTitle>
+                <CardDescription className="text-center text-xs mt-2 flex items-center justify-center gap-2">
+                  <Icon name="Info" size={14} />
+                  <span>Посты публикуются от имени питомца</span>
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex gap-3">
-                    <Avatar className="cursor-pointer" onClick={() => setShowPetSelector(!showPetSelector)}>
+                    <Avatar className="cursor-pointer ring-2 ring-primary/20" onClick={() => setShowPetSelector(!showPetSelector)}>
                       <AvatarImage src={selectedPet ? myPets.find(p => p.id === selectedPet)?.avatar : myPets[0].avatar} />
                       <AvatarFallback>{selectedPet ? myPets.find(p => p.id === selectedPet)?.name[0] : myPets[0].name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
+                      <div className="text-xs text-muted-foreground mb-1">
+                        От имени: <span className="font-semibold">{selectedPet ? myPets.find(p => p.id === selectedPet)?.name : myPets[0].name}</span>
+                      </div>
                       <input 
                         type="text" 
-                        placeholder={`Расскажи от имени ${selectedPet ? myPets.find(p => p.id === selectedPet)?.name : myPets[0].name}...`}
+                        placeholder={`Расскажи историю от лица ${selectedPet ? myPets.find(p => p.id === selectedPet)?.name : myPets[0].name}...`}
                         className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:border-primary focus:outline-none transition-all"
                       />
                       <div className="flex gap-2 mt-3">

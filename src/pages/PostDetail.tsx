@@ -16,6 +16,11 @@ const PostDetail = () => {
   const [commentLikes, setCommentLikes] = useState<Record<number, boolean>>({});
   const [sortBy, setSortBy] = useState<'popular' | 'newest' | 'oldest'>('popular');
 
+  const currentUser = {
+    name: 'Анна Петрова',
+    avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg'
+  };
+
   const postsData = [
     {
       id: 1,
@@ -304,27 +309,37 @@ const PostDetail = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-3">
-              <Avatar>
-                <AvatarImage src="https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg" />
-                <AvatarFallback>Я</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Написать комментарий..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-muted border-2 border-border focus:border-primary focus:outline-none transition-all"
-                />
-                <div className="flex gap-2 mt-2">
-                  <Button size="sm" disabled={!commentText.trim()}>
-                    <Icon name="Send" size={14} className="mr-1" />
-                    Отправить
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Icon name="Smile" size={14} />
-                  </Button>
+            <div className="p-3 bg-primary/5 border-2 border-primary/20 rounded-lg">
+              <div className="flex items-center gap-2 mb-3">
+                <Icon name="Info" size={16} className="text-primary" />
+                <span className="text-sm font-medium">Комментарии от имени хозяина</span>
+              </div>
+              <div className="flex gap-3">
+                <Avatar className="ring-2 ring-primary/20">
+                  <AvatarImage src={currentUser.avatar} />
+                  <AvatarFallback>{currentUser.name[0]}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="mb-2">
+                    <span className="text-sm font-semibold">{currentUser.name}</span>
+                    <span className="text-xs text-muted-foreground ml-2">хозяин питомцев</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Написать комментарий от вашего имени..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg bg-background border-2 border-border focus:border-primary focus:outline-none transition-all"
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <Button size="sm" disabled={!commentText.trim()}>
+                      <Icon name="Send" size={14} className="mr-1" />
+                      Отправить
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Icon name="Smile" size={14} />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

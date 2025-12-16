@@ -318,7 +318,7 @@ const Index = () => {
                               <span>•</span>
                               <span className="flex items-center gap-0.5">
                                 <Icon name="Users" size={12} className="inline" />
-                                {post.ownerFollowers.toLocaleString()}
+                                {(post.ownerFollowers + (following[post.ownerId] ? 1 : 0)).toLocaleString()}
                               </span>
                             </div>
                             <div>{post.time}</div>

@@ -86,7 +86,7 @@ const Login = () => {
                 <button
                   type="button"
                   className="text-primary hover:underline"
-                  onClick={() => {}}
+                  onClick={() => navigate('/forgot-password')}
                 >
                   Забыли пароль?
                 </button>

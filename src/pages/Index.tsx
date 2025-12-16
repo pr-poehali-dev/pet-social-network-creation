@@ -293,34 +293,35 @@ const Index = () => {
                         <div className="flex flex-col gap-2">
                           <Avatar 
                             className="ring-2 ring-primary/20 cursor-pointer hover:scale-110 transition-transform w-12 h-12"
-                            onClick={() => navigate(`/pet/${post.id}`)}
+                            onClick={() => navigate('/profile')}
                           >
-                            <AvatarImage src={post.petAvatar} />
-                            <AvatarFallback>{post.petName[0]}</AvatarFallback>
+                            <AvatarImage src={post.ownerAvatar} />
+                            <AvatarFallback>{post.ownerName[0]}</AvatarFallback>
                           </Avatar>
                           <Avatar 
                             className="w-8 h-8 ring-1 ring-border cursor-pointer hover:scale-110 transition-transform"
-                            onClick={() => navigate('/profile')}
-                            title={`Хозяин: ${post.ownerName}`}
+                            onClick={() => navigate(`/pet/${post.id}`)}
+                            title={`От имени: ${post.petName}`}
                           >
-                            <AvatarImage src={post.ownerAvatar} />
-                            <AvatarFallback className="text-xs">{post.ownerName[0]}</AvatarFallback>
+                            <AvatarImage src={post.petAvatar} />
+                            <AvatarFallback className="text-xs">{post.petName[0]}</AvatarFallback>
                           </Avatar>
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-base flex items-center gap-2">
-                            <span className="cursor-pointer hover:underline" onClick={() => navigate(`/pet/${post.id}`)}>{post.petName}</span>
-                            <Badge variant="secondary" className="text-xs">{post.petType}</Badge>
+                            <span className="cursor-pointer hover:underline" onClick={() => navigate('/profile')}>{post.ownerName}</span>
+                            <span className="flex items-center gap-0.5 transition-all text-xs text-muted-foreground font-normal">
+                              <Icon name="Users" size={12} className="inline" />
+                              <span className={`inline-block transition-all duration-300 ${following[post.ownerId] ? 'scale-110 font-bold text-primary' : ''}`}>
+                                {(post.ownerFollowers + (following[post.ownerId] ? 1 : 0)).toLocaleString()}
+                              </span>
+                            </span>
                           </CardTitle>
                           <CardDescription className="text-xs mt-1 space-y-0.5">
                             <div className="flex items-center gap-1">
-                              <span className="cursor-pointer hover:underline" onClick={() => navigate('/profile')}>хозяин: {post.ownerName}</span>
-                              <span>•</span>
-                              <span className="flex items-center gap-0.5 transition-all">
-                                <Icon name="Users" size={12} className="inline" />
-                                <span className={`inline-block transition-all duration-300 ${following[post.ownerId] ? 'scale-110 font-bold text-primary' : ''}`}>
-                                  {(post.ownerFollowers + (following[post.ownerId] ? 1 : 0)).toLocaleString()}
-                                </span>
+                              <span className="cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigate(`/pet/${post.id}`)}>
+                                от имени: {post.petName}
+                                <Badge variant="secondary" className="text-xs">{post.petType}</Badge>
                               </span>
                             </div>
                             <div>{post.time}</div>

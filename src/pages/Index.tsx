@@ -134,9 +134,16 @@ const Index = () => {
                 <Icon name="Home" size={20} />
                 <span>Главная</span>
               </Button>
-              <Button variant="ghost" className="gap-2 hover:scale-105 transition-transform">
+              <Button 
+                variant="ghost" 
+                className="gap-2 hover:scale-105 transition-transform relative"
+                onClick={() => navigate('/messages')}
+              >
                 <Icon name="MessageCircle" size={20} />
                 <span>Сообщения</span>
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  2
+                </Badge>
               </Button>
               <Button variant="ghost" className="gap-2 hover:scale-105 transition-transform">
                 <Icon name="Bell" size={20} />

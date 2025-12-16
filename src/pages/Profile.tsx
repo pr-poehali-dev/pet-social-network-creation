@@ -164,7 +164,11 @@ const Profile = () => {
                       </>
                     )}
                   </Button>
-                  <Button variant="outline" className="gap-2 hover:scale-105 transition-transform">
+                  <Button 
+                    variant="outline" 
+                    className="gap-2 hover:scale-105 transition-transform"
+                    onClick={() => navigate('/messages')}
+                  >
                     <Icon name="MessageCircle" size={16} />
                     Сообщение
                   </Button>

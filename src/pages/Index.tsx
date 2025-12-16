@@ -92,6 +92,15 @@ const Index = () => {
             </nav>
 
             <div className="flex items-center gap-3">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="gap-2 hover:scale-105 transition-transform"
+                onClick={() => navigate('/login')}
+              >
+                <Icon name="LogIn" size={16} />
+                Вход
+              </Button>
               <Button size="sm" className="gap-2 hover:scale-105 transition-transform">
                 <Icon name="Plus" size={16} />
                 Создать пост

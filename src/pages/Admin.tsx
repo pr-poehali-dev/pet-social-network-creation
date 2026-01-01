@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -9,110 +10,216 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 
+const API_URL = 'https://functions.poehali.dev/7f2e536a-fa14-4ff0-983e-b6672d933a2e';
+
+interface Stats {
+  totalUsers: number;
+  totalPets: number;
+  totalPosts: number;
+  totalPayments: number;
+  totalRevenue: number;
+  activeUsers: number;
+  newUsersToday: number;
+  pendingReports: number;
+}
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string;
+  joinDate: string;
+  status: string;
+  pets: number;
+  posts: number;
+}
+
+interface Payment {
+  id: number;
+  from: string;
+  to: string;
+  amount: number;
+  date: string;
+  status: string;
+}
+
+interface Report {
+  id: number;
+  postId: number;
+  author: string;
+  petName: string;
+  content: string;
+  reports: number;
+  reason: string;
+  date: string;
+}
+
 const Admin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, logout } = useAuth();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isAdmin) {
       navigate('/login');
+    } else {
+      loadStats();
+      loadUsers();
+      loadPayments();
+      loadReports();
     }
   }, [isAdmin, navigate]);
 
-  const stats = {
-    totalUsers: 1547,
-    totalPets: 3821,
-    totalPosts: 8943,
-    totalPayments: 247,
-    totalRevenue: 142500,
-    activeUsers: 892,
-    newUsersToday: 23,
-    pendingReports: 5
+  const loadStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}?path=stats`);
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
   };
 
-  const recentUsers = [
-    {
-      id: 1,
-      name: 'Мария Смирнова',
-      email: 'maria@example.com',
-      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
-      joinDate: '2 дня назад',
-      status: 'active',
-      pets: 2,
-      posts: 15
-    },
-    {
-      id: 2,
-      name: 'Дмитрий Волков',
-      email: 'dmitry@example.com',
-      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg',
-      joinDate: '5 дней назад',
-      status: 'active',
-      pets: 1,
-      posts: 8
-    },
-    {
-      id: 3,
-      name: 'Елена Коваль',
-      email: 'elena@example.com',
-      avatar: 'https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/bff346a2-8a44-4306-af6f-03fbdba785ec.jpg',
-      joinDate: '1 неделю назад',
-      status: 'blocked',
-      pets: 3,
-      posts: 0
+  const loadUsers = async () => {
+    try {
+      const url = searchQuery 
+        ? `${API_URL}?path=users&search=${encodeURIComponent(searchQuery)}`
+        : `${API_URL}?path=users`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Failed to load users:', error);
     }
-  ];
+  };
 
-  const recentPayments = [
-    {
-      id: 1,
-      from: 'Мария Смирнова',
-      to: 'Анна Петрова',
-      amount: 5000,
-      date: '2 дня назад',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      from: 'Дмитрий Волков',
-      to: 'Анна Петрова',
-      amount: 3500,
-      date: '5 дней назад',
-      status: 'completed'
-    },
-    {
-      id: 3,
-      from: 'Елена Коваль',
-      to: 'Анна Петрова',
-      amount: 2000,
-      date: '1 неделю назад',
-      status: 'pending'
+  const loadPayments = async () => {
+    try {
+      const response = await fetch(`${API_URL}?path=payments`);
+      const data = await response.json();
+      setPayments(data);
+    } catch (error) {
+      console.error('Failed to load payments:', error);
     }
-  ];
+  };
 
-  const reportedPosts = [
-    {
-      id: 1,
-      postId: 145,
-      author: 'Анна Петрова',
-      petName: 'Барсик',
-      content: 'Сегодня поймал солнечного зайчика...',
-      reports: 2,
-      reason: 'Спам',
-      date: '1 час назад'
-    },
-    {
-      id: 2,
-      postId: 298,
-      author: 'Олег Сидоров',
-      petName: 'Рекс',
-      content: 'Прогулка в парке была...',
-      reports: 5,
-      reason: 'Неприемлемый контент',
-      date: '3 часа назад'
+  const loadReports = async () => {
+    try {
+      const response = await fetch(`${API_URL}?path=reports`);
+      const data = await response.json();
+      setReports(data);
+    } catch (error) {
+      console.error('Failed to load reports:', error);
     }
-  ];
+  };
+
+  const handleBlockUser = async (userId: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}?path=user/block`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: 'Успешно', description: data.message });
+        loadUsers();
+      }
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось заблокировать пользователя', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUnblockUser = async (userId: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}?path=user/unblock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: 'Успешно', description: data.message });
+        loadUsers();
+      }
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось разблокировать пользователя', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeletePost = async (postId: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}?path=post/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: 'Успешно', description: data.message });
+        loadReports();
+        loadStats();
+      }
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось удалить пост', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRejectReports = async (postId: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}?path=reports/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: 'Успешно', description: data.message });
+        loadReports();
+        loadStats();
+      }
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось отклонить жалобы', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery !== undefined) {
+        loadUsers();
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Icon name="Loader2" size={48} className="animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary">
@@ -259,7 +366,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {recentUsers.map(user => (
+                  {users.map(user => (
                     <div
                       key={user.id}
                       className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-all"
@@ -298,12 +405,24 @@ const Admin = () => {
                           Профиль
                         </Button>
                         {user.status === 'active' ? (
-                          <Button variant="outline" size="sm" className="gap-1 text-red-600 hover:text-red-700">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-1 text-red-600 hover:text-red-700"
+                            onClick={() => handleBlockUser(user.id)}
+                            disabled={loading}
+                          >
                             <Icon name="Ban" size={14} />
                             Заблокировать
                           </Button>
                         ) : (
-                          <Button variant="outline" size="sm" className="gap-1 text-green-600 hover:text-green-700">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-1 text-green-600 hover:text-green-700"
+                            onClick={() => handleUnblockUser(user.id)}
+                            disabled={loading}
+                          >
                             <Icon name="CheckCircle" size={14} />
                             Разблокировать
                           </Button>
@@ -324,7 +443,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {recentPayments.map(payment => (
+                  {payments.map(payment => (
                     <div
                       key={payment.id}
                       className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-all"
@@ -366,7 +485,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {reportedPosts.map(report => (
+                  {reports.map(report => (
                     <div
                       key={report.id}
                       className="p-4 rounded-lg bg-red-500/5 border-2 border-red-500/20 hover:border-red-500/40 transition-all"
@@ -400,15 +519,23 @@ const Admin = () => {
                           <Icon name="Eye" size={14} />
                           Посмотреть пост
                         </Button>
-                        <Button variant="outline" size="sm" className="gap-1 text-orange-600 hover:text-orange-700">
-                          <Icon name="AlertCircle" size={14} />
-                          Предупредить
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-1 text-red-600 hover:text-red-700">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="gap-1 text-red-600 hover:text-red-700"
+                          onClick={() => handleDeletePost(report.postId)}
+                          disabled={loading}
+                        >
                           <Icon name="Trash2" size={14} />
                           Удалить пост
                         </Button>
-                        <Button variant="outline" size="sm" className="gap-1 text-green-600 hover:text-green-700">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="gap-1 text-green-600 hover:text-green-700"
+                          onClick={() => handleRejectReports(report.postId)}
+                          disabled={loading}
+                        >
                           <Icon name="CheckCircle" size={14} />
                           Отклонить жалобы
                         </Button>

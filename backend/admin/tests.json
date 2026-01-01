@@ -1,0 +1,37 @@
+{
+  "tests": [
+    {
+      "name": "Get admin statistics",
+      "method": "GET",
+      "path": "/?path=stats",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "totalUsers": 6,
+        "totalPets": 7,
+        "totalPosts": 5
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get users list",
+      "method": "GET",
+      "path": "/?path=users",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get payments list",
+      "method": "GET",
+      "path": "/?path=payments",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get reports list",
+      "method": "GET",
+      "path": "/?path=reports",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

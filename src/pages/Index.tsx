@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
@@ -13,6 +15,10 @@ const Index = () => {
   const [following, setFollowing] = useState<Record<number, boolean>>({});
   const [selectedPet, setSelectedPet] = useState<number | null>(null);
   const [showPetSelector, setShowPetSelector] = useState(false);
+  const [showDonateDialog, setShowDonateDialog] = useState(false);
+  const [selectedPostOwner, setSelectedPostOwner] = useState<string>('');
+  const [customAmount, setCustomAmount] = useState('');
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const toggleLike = (id: number) => {
     setLiked(prev => ({ ...prev, [id]: !prev[id] }));
@@ -423,6 +429,10 @@ const Index = () => {
                       <Button 
                         size="sm" 
                         className="gap-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:scale-105 transition-transform"
+                        onClick={() => {
+                          setSelectedPostOwner(post.ownerName);
+                          setShowDonateDialog(true);
+                        }}
                       >
                         <Icon name="Heart" size={16} className="fill-white" />
                         <span className="hidden sm:inline">Поддержать</span>
@@ -556,6 +566,102 @@ const Index = () => {
           </Button>
         </div>
       </nav>
+
+      <Dialog open={showDonateDialog} onOpenChange={setShowDonateDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <span className="text-3xl">💝</span>
+              Поддержать автора
+            </DialogTitle>
+            <DialogDescription>
+              Поддержите {selectedPostOwner} и помогите создавать больше контента о питомцах!
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Выберите сумму:</p>
+              <div className="grid grid-cols-3 gap-3">
+                {[100, 300, 500, 1000, 2000, 5000].map((amount) => (
+                  <Button
+                    key={amount}
+                    variant={selectedAmount === amount ? "default" : "outline"}
+                    className={`h-16 text-lg font-bold ${
+                      selectedAmount === amount 
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white' 
+                        : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedAmount(amount);
+                      setCustomAmount('');
+                    }}
+                  >
+                    {amount} ₽
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Или введите свою сумму:</p>
+              <div className="relative">
+                <Input
+                  type="number"
+                  placeholder="Введите сумму"
+                  value={customAmount}
+                  onChange={(e) => {
+                    setCustomAmount(e.target.value);
+                    setSelectedAmount(null);
+                  }}
+                  className="text-lg pr-12"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+                  ₽
+                </span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-primary/5 border-2 border-primary/20 rounded-lg space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <Icon name="Shield" size={16} className="text-primary" />
+                <span className="font-medium">Безопасная оплата</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Все платежи защищены. Ваши данные в безопасности.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowDonateDialog(false);
+                  setSelectedAmount(null);
+                  setCustomAmount('');
+                }}
+              >
+                Отмена
+              </Button>
+              <Button
+                className="flex-1 gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+                disabled={!selectedAmount && !customAmount}
+                onClick={() => {
+                  const amount = selectedAmount || Number(customAmount);
+                  alert(`Спасибо! Вы поддержали ${selectedPostOwner} на сумму ${amount} ₽`);
+                  setShowDonateDialog(false);
+                  setSelectedAmount(null);
+                  setCustomAmount('');
+                }}
+              >
+                <Icon name="Heart" size={16} className="fill-white" />
+                Поддержать {selectedAmount || customAmount || '...'} ₽
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

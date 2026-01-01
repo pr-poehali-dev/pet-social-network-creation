@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import Icon from '@/components/ui/icon';
+import SubmitChallengeModal, { SubmitData } from '@/components/SubmitChallengeModal';
 
 const API_URL = 'https://functions.poehali.dev/bca8d5ab-f38c-49d7-9150-12a7cdabdefb';
 const MOCK_USER_ID = '2';
@@ -45,6 +46,9 @@ const Challenges = () => {
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [submitModalOpen, setSubmitModalOpen] = useState(false);
+  const [submitChallengeId, setSubmitChallengeId] = useState<number>(0);
+  const [submitChallengeTitle, setSubmitChallengeTitle] = useState<string>('');
 
   useEffect(() => {
     loadChallenges();
@@ -105,6 +109,46 @@ const Challenges = () => {
     }
   };
 
+  const handleOpenSubmitModal = (challengeId: number, challengeTitle: string) => {
+    setSubmitChallengeId(challengeId);
+    setSubmitChallengeTitle(challengeTitle);
+    setSubmitModalOpen(true);
+  };
+
+  const handleSubmitEntry = async (data: SubmitData) => {
+    try {
+      const response = await fetch(`${API_URL}?path=submit`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-User-Id': MOCK_USER_ID
+        },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({ 
+          title: 'Успешно отправлено!', 
+          description: 'Ваше участие будет проверено модераторами в течение 24 часов' 
+        });
+        loadChallenges();
+        if (selectedChallenge) {
+          loadEntries(selectedChallenge.id);
+        }
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      toast({ 
+        title: 'Ошибка', 
+        description: 'Не удалось отправить участие. Попробуйте позже.', 
+        variant: 'destructive' 
+      });
+      throw error;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-500/10 via-background to-pink-500/10">
       <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border shadow-sm">
@@ -124,10 +168,15 @@ const Challenges = () => {
               </div>
             </div>
 
-            <Button className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-              <Icon name="Upload" size={16} />
-              Участвовать
-            </Button>
+            {challenges.length > 0 && (
+              <Button 
+                className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                onClick={() => handleOpenSubmitModal(challenges[0].id, challenges[0].title)}
+              >
+                <Icon name="Upload" size={16} />
+                Участвовать
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -223,9 +272,18 @@ const Challenges = () => {
                         <h1 className="text-white text-3xl font-bold mb-2">{selectedChallenge.title}</h1>
                         <p className="text-white/90 text-lg">{selectedChallenge.description}</p>
                       </div>
-                      <Badge className="bg-red-600 text-white text-lg px-4 py-2">
-                        {selectedChallenge.daysLeft} дней
-                      </Badge>
+                      <div className="flex flex-col gap-2 items-end">
+                        <Badge className="bg-red-600 text-white text-lg px-4 py-2">
+                          {selectedChallenge.daysLeft} дней
+                        </Badge>
+                        <Button 
+                          className="gap-2 bg-white text-purple-600 hover:bg-white/90"
+                          onClick={() => handleOpenSubmitModal(selectedChallenge.id, selectedChallenge.title)}
+                        >
+                          <Icon name="Upload" size={16} />
+                          Участвовать
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -338,6 +396,14 @@ const Challenges = () => {
           </>
         )}
       </main>
+
+      <SubmitChallengeModal
+        open={submitModalOpen}
+        onOpenChange={setSubmitModalOpen}
+        challengeId={submitChallengeId}
+        challengeTitle={submitChallengeTitle}
+        onSubmit={handleSubmitEntry}
+      />
     </div>
   );
 };

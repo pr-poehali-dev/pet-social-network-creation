@@ -258,29 +258,40 @@ const PostDetail = () => {
               </div>
             )}
 
-            <div className="flex items-center gap-4 pt-2 border-t">
+            <div className="flex items-center justify-between pt-2 border-t">
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="gap-2 hover:scale-110 transition-transform"
+                  onClick={() => setLiked(!liked)}
+                >
+                  <Icon 
+                    name="Heart" 
+                    size={20} 
+                    className={liked ? "fill-primary text-primary" : ""}
+                  />
+                  <span className={liked ? "text-primary font-semibold" : ""}>
+                    {post.likes + (liked ? 1 : 0)}
+                  </span>
+                </Button>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Icon name="MessageCircle" size={20} />
+                  <span>{post.commentsData.length}</span>
+                </Button>
+                <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
+                  <Icon name="Share2" size={20} />
+                  <span className="hidden sm:inline">Поделиться</span>
+                </Button>
+              </div>
+              
               <Button 
-                variant="ghost" 
                 size="sm" 
-                className="gap-2 hover:scale-110 transition-transform"
-                onClick={() => setLiked(!liked)}
+                className="gap-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:scale-105 transition-transform"
               >
-                <Icon 
-                  name="Heart" 
-                  size={20} 
-                  className={liked ? "fill-primary text-primary" : ""}
-                />
-                <span className={liked ? "text-primary font-semibold" : ""}>
-                  {post.likes + (liked ? 1 : 0)}
-                </span>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <Icon name="MessageCircle" size={20} />
-                <span>{post.commentsData.length}</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
-                <Icon name="Share2" size={20} />
-                <span>Поделиться</span>
+                <Icon name="Heart" size={16} className="fill-white" />
+                <span className="hidden sm:inline">Поддержать автора</span>
+                <span className="sm:hidden">💰</span>
               </Button>
             </div>
           </CardContent>

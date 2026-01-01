@@ -388,34 +388,45 @@ const Index = () => {
                         className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
                       />
                     </div>
-                    <div className="flex items-center gap-4 pt-2">
+                    <div className="flex items-center justify-between pt-2 border-t">
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="gap-2 hover:scale-110 transition-transform"
+                          onClick={() => toggleLike(post.id)}
+                        >
+                          <Icon 
+                            name={liked[post.id] ? "Heart" : "Heart"} 
+                            size={20} 
+                            className={liked[post.id] ? "fill-primary text-primary" : ""}
+                          />
+                          <span className={liked[post.id] ? "text-primary font-semibold" : ""}>
+                            {post.likes + (liked[post.id] ? 1 : 0)}
+                          </span>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="gap-2 hover:scale-110 transition-transform"
+                          onClick={() => navigate(`/post/${post.id}`)}
+                        >
+                          <Icon name="MessageCircle" size={20} />
+                          <span>{post.comments}</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
+                          <Icon name="Share2" size={20} />
+                          <span className="hidden sm:inline">Поделиться</span>
+                        </Button>
+                      </div>
+                      
                       <Button 
-                        variant="ghost" 
                         size="sm" 
-                        className="gap-2 hover:scale-110 transition-transform"
-                        onClick={() => toggleLike(post.id)}
+                        className="gap-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg hover:scale-105 transition-transform"
                       >
-                        <Icon 
-                          name={liked[post.id] ? "Heart" : "Heart"} 
-                          size={20} 
-                          className={liked[post.id] ? "fill-primary text-primary" : ""}
-                        />
-                        <span className={liked[post.id] ? "text-primary font-semibold" : ""}>
-                          {post.likes + (liked[post.id] ? 1 : 0)}
-                        </span>
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="gap-2 hover:scale-110 transition-transform"
-                        onClick={() => navigate(`/post/${post.id}`)}
-                      >
-                        <Icon name="MessageCircle" size={20} />
-                        <span>{post.comments}</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="gap-2 hover:scale-110 transition-transform">
-                        <Icon name="Share2" size={20} />
-                        <span>Поделиться</span>
+                        <Icon name="Heart" size={16} className="fill-white" />
+                        <span className="hidden sm:inline">Поддержать</span>
+                        <span className="sm:hidden">💰</span>
                       </Button>
                     </div>
 

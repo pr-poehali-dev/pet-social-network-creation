@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,14 @@ import Icon from '@/components/ui/icon';
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { user, isAdmin, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate('/login');
+    }
+  }, [isAdmin, navigate]);
 
   const stats = {
     totalUsers: 1547,
@@ -134,10 +142,17 @@ const Admin = () => {
                   </Badge>
                 )}
               </Button>
-              <Avatar className="cursor-pointer ring-2 ring-primary/20">
-                <AvatarImage src="https://cdn.poehali.dev/projects/77ebbbc0-cc8c-4ba3-8270-07814cb4795b/files/b7510f08-2b0a-44c3-8ff2-7655fcd87ba0.jpg" />
-                <AvatarFallback>A</AvatarFallback>
-              </Avatar>
+              <div className="flex items-center gap-2">
+                <Avatar className="cursor-pointer ring-2 ring-primary/20">
+                  <AvatarImage src={user?.avatar} />
+                  <AvatarFallback>{user?.name[0]}</AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium">{user?.name}</span>
+              </div>
+              <Button variant="ghost" size="sm" className="gap-2" onClick={logout}>
+                <Icon name="LogOut" size={16} />
+                Выход
+              </Button>
             </div>
           </div>
         </div>

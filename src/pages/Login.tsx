@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,12 +10,30 @@ import Icon from '@/components/ui/icon';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      toast({
+        title: 'Вход выполнен',
+        description: 'Добро пожаловать в ПетСеть!'
+      });
+    } catch (error) {
+      toast({
+        title: 'Ошибка входа',
+        description: 'Проверьте правильность введенных данных',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -77,10 +97,17 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full gap-2 hover:scale-105 transition-transform"
+                disabled={isLoading}
               >
                 <Icon name="LogIn" size={18} />
-                Войти
+                {isLoading ? 'Вход...' : 'Войти'}
               </Button>
+
+              <div className="text-center text-xs text-muted-foreground p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="font-semibold mb-1">Тестовые данные администратора:</p>
+                <p>Email: <code className="text-primary">admin@petnet.ru</code></p>
+                <p>Пароль: <code className="text-primary">admin123</code></p>
+              </div>
 
               <div className="text-center text-sm">
                 <button

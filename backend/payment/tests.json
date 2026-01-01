@@ -1,0 +1,38 @@
+{
+  "tests": [
+    {
+      "name": "Create payment",
+      "method": "POST",
+      "body": {
+        "action": "create_payment",
+        "amount": 500,
+        "owner_name": "Анна Петрова",
+        "description": "Поддержка автора"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "payment_id": "string",
+        "amount": 500,
+        "currency": "RUB",
+        "status": "pending",
+        "payment_url": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Check payment status",
+      "method": "POST",
+      "body": {
+        "action": "check_payment",
+        "payment_id": "test-payment-id"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "payment_id": "test-payment-id",
+        "status": "succeeded",
+        "paid": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

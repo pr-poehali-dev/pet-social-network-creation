@@ -19,6 +19,50 @@ const Index = () => {
   const [selectedPostOwner, setSelectedPostOwner] = useState<string>('');
   const [customAmount, setCustomAmount] = useState('');
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const handleDonate = async () => {
+    const amount = selectedAmount || Number(customAmount);
+    if (!amount || amount <= 0) return;
+
+    setIsProcessingPayment(true);
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/60b9754a-fda3-4a94-a083-d667d605e4c8', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'create_payment',
+          amount: amount,
+          owner_name: selectedPostOwner,
+          description: `Поддержка ${selectedPostOwner} на сумму ${amount} ₽`
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.payment_url) {
+        window.open(data.payment_url, '_blank');
+        
+        setShowDonateDialog(false);
+        setSelectedAmount(null);
+        setCustomAmount('');
+        
+        setTimeout(() => {
+          alert(`Спасибо за поддержку! Вы открыли страницу оплаты на сумму ${amount} ₽`);
+        }, 500);
+      } else {
+        alert('Ошибка при создании платежа. Попробуйте снова.');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Ошибка при создании платежа. Проверьте соединение.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
 
   const toggleLike = (id: number) => {
     setLiked(prev => ({ ...prev, [id]: !prev[id] }));
@@ -646,17 +690,20 @@ const Index = () => {
               </Button>
               <Button
                 className="flex-1 gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
-                disabled={!selectedAmount && !customAmount}
-                onClick={() => {
-                  const amount = selectedAmount || Number(customAmount);
-                  alert(`Спасибо! Вы поддержали ${selectedPostOwner} на сумму ${amount} ₽`);
-                  setShowDonateDialog(false);
-                  setSelectedAmount(null);
-                  setCustomAmount('');
-                }}
+                disabled={(!selectedAmount && !customAmount) || isProcessingPayment}
+                onClick={handleDonate}
               >
-                <Icon name="Heart" size={16} className="fill-white" />
-                Поддержать {selectedAmount || customAmount || '...'} ₽
+                {isProcessingPayment ? (
+                  <>
+                    <Icon name="Loader2" size={16} className="animate-spin" />
+                    Обработка...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Heart" size={16} className="fill-white" />
+                    Поддержать {selectedAmount || customAmount || '...'} ₽
+                  </>
+                )}
               </Button>
             </div>
           </div>

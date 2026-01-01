@@ -186,6 +186,14 @@ const Index = () => {
               </Button>
               <Button 
                 variant="ghost" 
+                className="gap-2 hover:scale-105 transition-transform"
+                onClick={() => navigate('/challenges')}
+              >
+                <Icon name="Trophy" size={20} />
+                <span>Челленджи</span>
+              </Button>
+              <Button 
+                variant="ghost" 
                 className="gap-2 hover:scale-105 transition-transform relative"
                 onClick={() => navigate('/messages')}
               >

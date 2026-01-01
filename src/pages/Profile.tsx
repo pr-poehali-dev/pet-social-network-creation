@@ -4,11 +4,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import { mockAchievements, getRarityColor, getRarityName } from '@/data/achievements';
 
 const Profile = () => {
   const navigate = useNavigate();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('pets');
+
+  const userLevel = 12;
+  const userXP = 1450;
+  const xpForNextLevel = 1300;
+  const xpProgress = Math.min(100, Math.round((userXP / xpForNextLevel) * 100));
+  
+  const unlockedAchievements = mockAchievements.filter(a => a.unlocked);
+  const totalPoints = unlockedAchievements.reduce((sum, a) => sum + a.points, 0);
 
   const ownerProfile = {
     name: 'Анна Петрова',
@@ -183,7 +195,35 @@ const Profile = () => {
                     <span className="font-bold text-xl">{ownerProfile.following}</span>
                     <span className="text-muted-foreground">подписок</span>
                   </div>
+                  <div className="flex flex-col items-center">
+                    <span className="font-bold text-xl text-primary">{unlockedAchievements.length}</span>
+                    <span className="text-muted-foreground">достижений</span>
+                  </div>
                 </div>
+                
+                <Card className="border-2 bg-gradient-to-r from-primary/10 to-secondary/10">
+                  <CardContent className="pt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary text-white font-bold text-sm">
+                          {userLevel}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold">Уровень {userLevel}</p>
+                          <p className="text-xs text-muted-foreground">{totalPoints} очков опыта</p>
+                        </div>
+                      </div>
+                      <Badge className="gap-1 text-xs">
+                        <Icon name="TrendingUp" size={12} />
+                        {xpProgress}%
+                      </Badge>
+                    </div>
+                    <Progress value={xpProgress} className="h-2" />
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      {userXP} / {xpForNextLevel} до следующего уровня
+                    </p>
+                  </CardContent>
+                </Card>
 
                 <div className="flex gap-3">
                   <Button 
@@ -216,16 +256,117 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-2 shadow-xl animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-2xl">💎</span>
-              Топ спонсоров
-            </CardTitle>
-            <CardDescription>
-              Благодарим за финансовую поддержку!
-            </CardDescription>
-          </CardHeader>
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="pets" className="gap-2">
+              <Icon name="PawPrint" size={16} />
+              Питомцы
+            </TabsTrigger>
+            <TabsTrigger value="achievements" className="gap-2">
+              <Icon name="Trophy" size={16} />
+              Достижения
+              <Badge className="ml-1">{unlockedAchievements.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="sponsors" className="gap-2">
+              <Icon name="Heart" size={16} />
+              Спонсоры
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="achievements" className="space-y-4">
+            <Card className="border-2 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="text-2xl">🏆</span>
+                  Достижения
+                </CardTitle>
+                <CardDescription>
+                  Разблокировано {unlockedAchievements.length} из {mockAchievements.length} достижений
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {Object.entries(mockAchievements.reduce((acc, achievement) => {
+                  if (!acc[achievement.category]) acc[achievement.category] = [];
+                  acc[achievement.category].push(achievement);
+                  return acc;
+                }, {} as Record<string, typeof mockAchievements>)).map(([category, achievements]) => (
+                  <div key={category}>
+                    <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                      <Icon name="Star" size={18} className="text-primary" />
+                      {category}
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {achievements.map(achievement => (
+                        <div
+                          key={achievement.id}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            achievement.unlocked
+                              ? `${getRarityColor(achievement.rarity)} hover:scale-105 cursor-pointer shadow-md`
+                              : 'bg-muted/50 border-muted grayscale opacity-60'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`text-3xl ${achievement.unlocked ? '' : 'filter grayscale'}`}>
+                              {achievement.icon}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <h5 className="font-semibold text-sm leading-tight">
+                                  {achievement.title}
+                                </h5>
+                                <Badge variant="outline" className="text-xs whitespace-nowrap">
+                                  {achievement.points} XP
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                {achievement.description}
+                              </p>
+                              
+                              {!achievement.unlocked && achievement.progress > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  <Progress value={achievement.progress} className="h-1.5" />
+                                  <p className="text-xs text-muted-foreground">
+                                    Прогресс: {achievement.progress}%
+                                  </p>
+                                </div>
+                              )}
+                              
+                              {achievement.unlocked && achievement.unlockedAt && (
+                                <div className="flex items-center gap-1 mt-2">
+                                  <Icon name="CheckCircle" size={12} className="text-green-600" />
+                                  <p className="text-xs text-green-600 font-medium">
+                                    Получено {new Date(achievement.unlockedAt).toLocaleDateString('ru-RU')}
+                                  </p>
+                                </div>
+                              )}
+                              
+                              <div className="mt-2">
+                                <Badge variant="outline" className={`text-xs ${getRarityColor(achievement.rarity)}`}>
+                                  {getRarityName(achievement.rarity)}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="sponsors">
+            <Card className="border-2 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span className="text-2xl">💎</span>
+                  Топ спонсоров
+                </CardTitle>
+                <CardDescription>
+                  Благодарим за финансовую поддержку!
+                </CardDescription>
+              </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {topSupporters.map((supporter, index) => (
@@ -276,16 +417,18 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+          </TabsContent>
 
-        <div>
-          <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <span>🐾</span>
-            Мои питомцы
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pets.map(pet => (
-              <Card 
+          <TabsContent value="pets">
+            <div>
+              <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <span>🐾</span>
+                Мои питомцы
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pets.map(pet => (
+                  <Card 
                 key={pet.id} 
                 className="overflow-hidden hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
                 onClick={() => navigate(`/pet/${pet.id}`)}
@@ -331,7 +474,9 @@ const Profile = () => {
               </Card>
             ))}
           </div>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

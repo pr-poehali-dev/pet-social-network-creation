@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Get challenges list",
+      "method": "GET",
+      "path": "/?path=list",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get challenge entries",
+      "method": "GET",
+      "path": "/?path=entries&challengeId=1",
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

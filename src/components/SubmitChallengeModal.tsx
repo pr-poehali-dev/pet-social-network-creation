@@ -45,12 +45,35 @@ const SubmitChallengeModal = ({
   const [uploadMethod, setUploadMethod] = useState<'file' | 'url'>('url');
   const [loading, setLoading] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
 
   const mockPets: Pet[] = [
     { id: 1, name: 'Барсик', species: 'Кот', avatar: 'https://images.unsplash.com/photo-1574158622682-e40e69881006' },
     { id: 2, name: 'Мурка', species: 'Кошка', avatar: 'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8' },
     { id: 3, name: 'Рекс', species: 'Собака', avatar: 'https://images.unsplash.com/photo-1568572933382-74d440642117' }
   ];
+
+  const validateVideo = (file: File) => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (file.size < 1024 * 1024) {
+      warnings.push('Видео очень маленькое (меньше 1 МБ). Убедитесь, что качество достаточное.');
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      warnings.push('Большой размер файла. Загрузка может занять время.');
+    }
+
+    const validTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'];
+    if (!validTypes.includes(file.type)) {
+      warnings.push(`Формат ${file.type} может не поддерживаться. Рекомендуем MP4.`);
+    }
+
+    setValidationErrors(errors);
+    setValidationWarnings(warnings);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -66,6 +89,25 @@ const SubmitChallengeModal = ({
       setVideoFile(file);
       const url = URL.createObjectURL(file);
       setVideoPreviewUrl(url);
+      validateVideo(file);
+
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        const duration = video.duration;
+        const newWarnings = [...validationWarnings];
+        
+        if (duration < 3) {
+          newWarnings.push('Видео слишком короткое (меньше 3 секунд).');
+        }
+        if (duration > 180) {
+          newWarnings.push('Видео длиннее 3 минут. Рекомендуем сократить для лучшего результата.');
+        }
+        
+        setValidationWarnings(newWarnings);
+      };
+      video.src = url;
     }
   };
 
@@ -114,6 +156,9 @@ const SubmitChallengeModal = ({
       setVideoUrl('');
       setTitle('');
       setDescription('');
+      setVideoPreviewUrl('');
+      setValidationErrors([]);
+      setValidationWarnings([]);
       onOpenChange(false);
     } catch (error) {
       console.error('Submit error:', error);
@@ -258,33 +303,78 @@ const SubmitChallengeModal = ({
               </div>
 
               {videoPreviewUrl && (
-                <div className="border-2 rounded-lg overflow-hidden bg-black">
-                  <video 
-                    src={videoPreviewUrl} 
-                    controls 
-                    className="w-full aspect-video"
-                  >
-                    Ваш браузер не поддерживает видео
-                  </video>
-                  <div className="p-3 bg-muted/50 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Eye" size={16} className="text-green-600" />
-                      <span className="text-sm font-medium text-green-600">Предпросмотр готов</span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setVideoFile(null);
-                        setVideoPreviewUrl('');
-                      }}
-                      className="gap-1 text-red-600 hover:text-red-700"
+                <div className="space-y-3">
+                  <div className="border-2 rounded-lg overflow-hidden bg-black">
+                    <video 
+                      src={videoPreviewUrl} 
+                      controls 
+                      className="w-full aspect-video"
                     >
-                      <Icon name="X" size={14} />
-                      Удалить
-                    </Button>
+                      Ваш браузер не поддерживает видео
+                    </video>
+                    <div className="p-3 bg-muted/50 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Icon name="Eye" size={16} className="text-green-600" />
+                        <span className="text-sm font-medium text-green-600">Предпросмотр готов</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setVideoFile(null);
+                          setVideoPreviewUrl('');
+                          setValidationErrors([]);
+                          setValidationWarnings([]);
+                        }}
+                        className="gap-1 text-red-600 hover:text-red-700"
+                      >
+                        <Icon name="X" size={14} />
+                        Удалить
+                      </Button>
+                    </div>
                   </div>
+
+                  {validationErrors.length > 0 && (
+                    <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-800 rounded-lg p-3">
+                      <div className="flex items-start gap-2">
+                        <Icon name="AlertCircle" size={16} className="text-red-600 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-red-600 mb-1">Критические ошибки:</p>
+                          <ul className="text-sm text-red-600 space-y-1">
+                            {validationErrors.map((error, i) => (
+                              <li key={i}>• {error}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {validationWarnings.length > 0 && (
+                    <div className="bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                      <div className="flex items-start gap-2">
+                        <Icon name="AlertTriangle" size={16} className="text-yellow-600 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-yellow-600 mb-1">Предупреждения:</p>
+                          <ul className="text-sm text-yellow-600 space-y-1">
+                            {validationWarnings.map((warning, i) => (
+                              <li key={i}>• {warning}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {validationErrors.length === 0 && validationWarnings.length === 0 && (
+                    <div className="bg-green-50 dark:bg-green-950/30 border-2 border-green-200 dark:border-green-800 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <Icon name="CheckCircle" size={16} className="text-green-600" />
+                        <p className="text-sm font-semibold text-green-600">Видео прошло проверку! Готово к отправке.</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

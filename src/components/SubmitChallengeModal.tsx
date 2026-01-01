@@ -44,6 +44,7 @@ const SubmitChallengeModal = ({
   const [description, setDescription] = useState('');
   const [uploadMethod, setUploadMethod] = useState<'file' | 'url'>('url');
   const [loading, setLoading] = useState(false);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>('');
 
   const mockPets: Pet[] = [
     { id: 1, name: 'Барсик', species: 'Кот', avatar: 'https://images.unsplash.com/photo-1574158622682-e40e69881006' },
@@ -63,6 +64,8 @@ const SubmitChallengeModal = ({
         return;
       }
       setVideoFile(file);
+      const url = URL.createObjectURL(file);
+      setVideoPreviewUrl(url);
     }
   };
 
@@ -177,49 +180,113 @@ const SubmitChallengeModal = ({
           </div>
 
           {uploadMethod === 'url' ? (
-            <div className="space-y-2">
-              <Label htmlFor="videoUrl">Ссылка на видео *</Label>
-              <Input
-                id="videoUrl"
-                type="url"
-                placeholder="https://youtube.com/watch?v=... или прямая ссылка"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Поддерживаются: YouTube, Vimeo, прямые ссылки на видео
-              </p>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="videoUrl">Ссылка на видео *</Label>
+                <Input
+                  id="videoUrl"
+                  type="url"
+                  placeholder="https://youtube.com/watch?v=... или прямая ссылка"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Поддерживаются: YouTube, Vimeo, прямые ссылки на видео
+                </p>
+              </div>
+
+              {videoUrl && (
+                <div className="border-2 rounded-lg overflow-hidden bg-muted">
+                  <div className="aspect-video flex items-center justify-center">
+                    {videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') ? (
+                      <div className="text-center p-8">
+                        <Icon name="Youtube" size={48} className="mx-auto mb-3 text-red-600" />
+                        <p className="text-sm text-muted-foreground">YouTube видео будет встроено после отправки</p>
+                      </div>
+                    ) : videoUrl.includes('vimeo.com') ? (
+                      <div className="text-center p-8">
+                        <Icon name="Video" size={48} className="mx-auto mb-3 text-blue-600" />
+                        <p className="text-sm text-muted-foreground">Vimeo видео будет встроено после отправки</p>
+                      </div>
+                    ) : (
+                      <video 
+                        src={videoUrl} 
+                        controls 
+                        className="w-full h-full"
+                        onError={() => {
+                          console.error('Failed to load video preview');
+                        }}
+                      >
+                        Ваш браузер не поддерживает видео
+                      </video>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="space-y-2">
-              <Label htmlFor="videoFile">Загрузить видео *</Label>
-              <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
-                <input
-                  id="videoFile"
-                  type="file"
-                  accept="video/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <label htmlFor="videoFile" className="cursor-pointer">
-                  <Icon name="Upload" size={48} className="mx-auto mb-3 text-muted-foreground" />
-                  {videoFile ? (
-                    <div>
-                      <p className="font-semibold text-primary">{videoFile.name}</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {(videoFile.size / (1024 * 1024)).toFixed(2)} МБ
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="font-semibold">Нажмите для выбора видео</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        MP4, MOV, AVI до 100 МБ
-                      </p>
-                    </div>
-                  )}
-                </label>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="videoFile">Загрузить видео *</Label>
+                <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
+                  <input
+                    id="videoFile"
+                    type="file"
+                    accept="video/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <label htmlFor="videoFile" className="cursor-pointer">
+                    <Icon name="Upload" size={48} className="mx-auto mb-3 text-muted-foreground" />
+                    {videoFile ? (
+                      <div>
+                        <p className="font-semibold text-primary">{videoFile.name}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {(videoFile.size / (1024 * 1024)).toFixed(2)} МБ
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-semibold">Нажмите для выбора видео</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          MP4, MOV, AVI до 100 МБ
+                        </p>
+                      </div>
+                    )}
+                  </label>
+                </div>
               </div>
+
+              {videoPreviewUrl && (
+                <div className="border-2 rounded-lg overflow-hidden bg-black">
+                  <video 
+                    src={videoPreviewUrl} 
+                    controls 
+                    className="w-full aspect-video"
+                  >
+                    Ваш браузер не поддерживает видео
+                  </video>
+                  <div className="p-3 bg-muted/50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Icon name="Eye" size={16} className="text-green-600" />
+                      <span className="text-sm font-medium text-green-600">Предпросмотр готов</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setVideoFile(null);
+                        setVideoPreviewUrl('');
+                      }}
+                      className="gap-1 text-red-600 hover:text-red-700"
+                    >
+                      <Icon name="X" size={14} />
+                      Удалить
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

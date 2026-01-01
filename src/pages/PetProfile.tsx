@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
+import Navigation from '@/components/Navigation';
 
 interface Comment {
   id: number;
@@ -165,27 +166,7 @@ const PetProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary pb-20">
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" className="gap-2" onClick={() => navigate('/profile')}>
-              <Icon name="ArrowLeft" size={20} />
-              <span>Назад</span>
-            </Button>
-            
-            <div className="flex items-center gap-2">
-              <div className="text-2xl animate-bounce-slow">🐾</div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                ПетСеть
-              </h1>
-            </div>
-
-            <Button variant="ghost" size="sm">
-              <Icon name="MoreVertical" size={20} />
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       <main className="container mx-auto px-4 py-6 space-y-6">
         <Card className="border-2 shadow-xl animate-fade-in overflow-hidden">

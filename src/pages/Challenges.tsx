@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import Icon from '@/components/ui/icon';
 import SubmitChallengeModal, { SubmitData } from '@/components/SubmitChallengeModal';
+import Navigation from '@/components/Navigation';
 
 const API_URL = 'https://functions.poehali.dev/bca8d5ab-f38c-49d7-9150-12a7cdabdefb';
 const MOCK_USER_ID = '2';
@@ -151,37 +152,15 @@ const Challenges = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-500/10 via-background to-pink-500/10">
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" className="gap-2" onClick={() => navigate('/')}>
-                <Icon name="ArrowLeft" size={20} />
-                <span>Назад</span>
-              </Button>
-              
-              <div className="flex items-center gap-2">
-                <div className="text-2xl">🏆</div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Челленджи ПетСеть
-                </h1>
-              </div>
-            </div>
-
-            {challenges.length > 0 && (
-              <Button 
-                className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                onClick={() => handleOpenSubmitModal(challenges[0].id, challenges[0].title)}
-              >
-                <Icon name="Upload" size={16} />
-                Участвовать
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
+      <Navigation />
       <main className="container mx-auto px-4 py-6">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="text-3xl">🏆</div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Челленджи ПетСеть
+          </h1>
+        </div>
+
         {!selectedChallenge ? (
           <>
             <div className="text-center mb-8">

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
+import Navigation from '@/components/Navigation';
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -221,29 +222,15 @@ const Messages = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-secondary">
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" className="gap-2" onClick={() => navigate('/')}>
-              <Icon name="ArrowLeft" size={20} />
-              <span>Назад</span>
-            </Button>
-            
-            <div className="flex items-center gap-2">
-              <div className="text-2xl animate-bounce-slow">💬</div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Сообщения
-              </h1>
-            </div>
-
-            <Button variant="ghost" size="sm">
-              <Icon name="Settings" size={20} />
-            </Button>
-          </div>
+      <Navigation />
+      <main className="container mx-auto px-4 py-6">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="text-3xl">💬</div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Сообщения
+          </h1>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-140px)]">
           {/* Список чатов */}
           <Card className="lg:col-span-4 border-2 shadow-xl overflow-hidden flex flex-col">
